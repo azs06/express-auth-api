@@ -34,3 +34,5 @@ User.beforeCreate(async (user) => {
 });
 
 User.belongsTo(Role, { foreignKey: "role_id" });
+
+module.exports = User;

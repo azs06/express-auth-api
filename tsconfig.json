@@ -4,8 +4,10 @@
       "module": "CommonJS",
       "outDir": "./dist",
       "rootDir": "./src",
-      "strict": true,
-      "esModuleInterop": true
+      "strict": false,
+      "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true
     }
   }
   

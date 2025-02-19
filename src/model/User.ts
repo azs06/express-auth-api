@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/sequelize";
+import bcrypt from "bcryptjs";
 import { Role } from "./Role";
 
 export const User = sequelize.define("User", {
@@ -11,11 +12,6 @@ export const User = sequelize.define("User", {
   name: {
     type: DataTypes.STRING,
     allowNull: false
-  },
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
   },
   email: {
     type: DataTypes.STRING,
@@ -30,6 +26,11 @@ export const User = sequelize.define("User", {
     type: DataTypes.INTEGER,
     references: { model: "Roles", key: "id" }
   }
+});
+
+// Hash password before saving
+User.beforeCreate(async (user) => {
+  user.password = await bcrypt.hash(user.password, 10);
 });
 
 User.belongsTo(Role, { foreignKey: "role_id" });

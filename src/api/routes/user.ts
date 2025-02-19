@@ -1,19 +1,19 @@
 import express from "express";
 import { User } from "../../model/User";
+import { authenticate, authorize } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
 
-// Get all users
-router.get("/", async (req, res) => {
+// Get all users (Admin only)
+router.get("/", authenticate, authorize([1]), async (req, res) => {
   const users = await User.findAll();
   res.json(users);
 });
 
-// Create a new user
-router.post("/", async (req, res) => {
-  const user = await User.create(req.body);
-  res.status(201).json(user);
+// Get own profile
+router.get("/me", authenticate, async (req, res) => {
+  res.json(req.user);
 });
 
 export default router;

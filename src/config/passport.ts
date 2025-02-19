@@ -1,6 +1,6 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import passport from "passport";
-import { User } from "../model/User";
+import { User } from "../models/User";
 import dotenv from "dotenv";
 
 dotenv.config();

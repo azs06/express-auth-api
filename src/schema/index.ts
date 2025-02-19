@@ -14,7 +14,7 @@ export const roles = mysqlTable("roles", {
 
 // Users Table
 export const users = mysqlTable("users", {
-  id: serial("id").primaryKey(),
+  id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).unique(),
   password: varchar("password", { length: 255 }),

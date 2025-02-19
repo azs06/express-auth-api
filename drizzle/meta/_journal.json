@@ -15,6 +15,13 @@
       "when": 1740001897621,
       "tag": "0001_old_sally_floyd",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1740002400847,
+      "tag": "0002_glamorous_expediter",
+      "breakpoints": true
     }
   ]
 }

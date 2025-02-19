@@ -8,15 +8,19 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "migrate": "npx drizzle-kit generate",
-    "apply-migrations": "npx drizzle-kit push"
+    "apply-migrations": "npx drizzle-kit push",
+    "seed": "ts-node src/seeders/index.ts",
+    "seed-dummy": "ts-node src/seeders/seed-dummy.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.5.0",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
+    "drizzle-seed": "^0.3.1",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.12.0",

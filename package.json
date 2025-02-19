@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "migrate": "npx sequelize-cli db:migrate --config src/config/config.ts --models-path src/model --migrations-path src/migrations --seeders-path src/seeders",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo --config src/config/config.ts",
+    "seed": "npx sequelize-cli db:seed:all --config src/config/config.ts"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +29,9 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/passport-jwt": "^4.0.1",
+    "@types/sequelize": "^4.28.20",
     "nodemon": "^3.1.9",
+    "sequelize-cli": "^6.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }

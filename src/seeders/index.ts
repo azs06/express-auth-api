@@ -18,7 +18,7 @@ async function seedDatabase() {
   async function seedRoles() {
     const existingRoles = await db.select().from(roles);
     if (existingRoles.length === 0) {
-      await db.insert(roles).values([{ name: "Admin" }, { name: "User" }]);
+      await db.insert(roles).values([{ name: "Admin", id: 1 }, { name: "User", id: 2 }]);
       console.log("✅ Roles inserted.");
     } else {
       console.log("✅ Roles already exist, skipping.");

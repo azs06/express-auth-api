@@ -9,16 +9,12 @@ dotenv.config();
 
 const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET as string
+  secretOrKey: process.env.JWT_SECRET as string,
 };
 
-
 const getExistingUser = async (id) => {
-  const user =  await db
-    .select()
-    .from(users)
-    .where(eq(users.id, id));
-  return user.length ? user[0] : null;  
+  const user = await db.select().from(users).where(eq(users.id, id));
+  return user.length ? user[0] : null;
 };
 
 passport.use(
@@ -26,7 +22,7 @@ passport.use(
     try {
       const user = await getExistingUser(jwt_payload.id);
       if (user) {
-        return done(null, user);
+        return done(null, { id: user.id, roleId: user.roleId });
       }
       return done(null, false);
     } catch (error) {
@@ -35,4 +31,6 @@ passport.use(
   })
 );
 
-export { passport }
+export { passport };
+
+export default passport;

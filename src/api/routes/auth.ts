@@ -6,25 +6,30 @@ import { db } from "../../config/db";
 import { users } from "../../schema";
 import dotenv from "dotenv";
 import { authenticate } from "../middleware/authMiddleware";
+import { Request, Response } from "express";
 
 dotenv.config();
 
 const router = express.Router();
 
+interface AuthenticatedRequest extends Request {
+  user?: { id: number; roleId: number };
+}
+
 // Login Route
-router.post("/login", async (req, res) => {
+router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
     const user = await db.select().from(users).where(eq(users.email, email));
 
     if (!user.length) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      res.status(401).json({ message: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, user[0].password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign(
@@ -39,12 +44,16 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/me", authenticate, async (req, res) => {
+router.get("/me", authenticate, async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) {
+    res.status(401).json({ message: "Unauthenticated" });
+    return;
+  }
   try {
     const user = await db.select().from(users).where(eq(users.id, req.user.id));
 
     if (!user.length) {
-      return res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
     }
 
     res.json({ id: user[0].id, email: user[0].email, roleId: user[0].roleId });

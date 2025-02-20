@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 // Create new user
-router.post("/", async (req, res) => {
+/* router.post("/", async (req, res) => {
   try {
     const { name, email, password, roleId } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,5 +33,5 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
+ */
 export default router;

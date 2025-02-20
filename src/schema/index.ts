@@ -18,7 +18,7 @@ export const users = mysqlTable("users", {
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).unique(),
   password: varchar("password", { length: 255 }),
-  roleId: int("role_id").notNull().references(() => roles.id),
+  roleId: int("role_id").notNull().references(() => roles.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });

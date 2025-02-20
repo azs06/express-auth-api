@@ -3,9 +3,15 @@ import { users, roles } from "../schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
+const getExistingUser = async (email) => {
+  return await db
+    .select()
+    .from(users)
+    .where(eq(users.email, "soikat@myrft.xyz"));
+};
+
 async function seedDatabase() {
   console.log("🌱 Seeding database...");
-
   // Insert Roles if they don't exist
   const existingRoles = await db.select().from(roles);
   if (existingRoles.length === 0) {
@@ -19,23 +25,31 @@ async function seedDatabase() {
   const hashedPassword = await bcrypt.hash("admin123", 10);
 
   // Check if user exists before inserting
-  const existingUser = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, "soikat@myrft.xyz"));
+  const existingAdminUser = await getExistingUser("soikat@myrft.xyz");
+  const existingUser = await getExistingUser("user@myrft.xyz");
 
-  if (existingUser.length === 0) {
-    const newUser = {
+  if (existingAdminUser.length === 0) {
+    await db.insert(users).values({
       roleId: 1,
       name: "Soikat",
       email: "soikat@myrft.xyz",
       password: hashedPassword,
-    };
-
-    await db.insert(users).values(newUser);
+    });
     console.log("✅ Admin user inserted.");
   } else {
     console.log("✅ Admin user already exists, skipping.");
+  }
+
+  if (existingUser.length === 0) {
+    await db.insert(users).values({
+      roleId: 2,
+      name: "Normar User",
+      email: "user@myrft.xyz",
+      password: hashedPassword,
+    });
+    console.log("✅ Basic user inserted.");
+  } else {
+    console.log("✅ Basic user already exists, skipping.");
   }
 
   console.log("🎉 Seeding completed!");

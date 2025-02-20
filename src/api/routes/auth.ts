@@ -2,10 +2,10 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { eq } from "drizzle-orm";
-import { db } from "../../config/db";
-import { users } from "../../schema";
+import { db } from "../../config/db.ts";
+import { users } from "../../schema/index.ts";
 import dotenv from "dotenv";
-import { authenticate } from "../middleware/authMiddleware";
+import { authenticate } from "../middleware/authMiddleware.ts";
 import { Request, Response } from "express";
 
 dotenv.config();

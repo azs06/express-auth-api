@@ -1,5 +1,5 @@
-import { db } from "../config/db";
-import { users, roles } from "../schema";
+import { db } from "../config/db.ts";
+import { users, roles } from "../schema/index.ts";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { seed } from "drizzle-seed";

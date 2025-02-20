@@ -10,7 +10,7 @@
     "migrate": "npx drizzle-kit generate",
     "apply-migrations": "npx drizzle-kit push",
     "seed": "ts-node src/seeders/index.ts",
-    "deno:dev": "deno src/server.ts"
+    "deno:dev": "deno run src/server.ts --unstable-sloppy-imports"
   },
   "keywords": [],
   "author": "",

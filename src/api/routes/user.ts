@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcryptjs";
-import { db } from "../../config/db";
-import { users } from "../../schema";
+import { db } from "../../config/db.ts";
+import { users } from "../../schema/index.ts";
 
 const router = express.Router();
 
@@ -16,22 +16,24 @@ router.get("/", async (req, res) => {
 });
 
 // Create new user
-/* router.post("/", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { name, email, password, roleId } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await db.insert(users).values({
+    const newValue = {
       name,
       email,
       password: hashedPassword,
-      roleId
-    });
+      roleId,
+    };
+
+    const newUser = await db.insert(users).values(newValue);
 
     res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
- */
+
 export default router;

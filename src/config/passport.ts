@@ -1,7 +1,7 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import passport from "passport";
-import { users } from "../schema/";
-import { db } from "./db";
+import { users } from "../schema/index.ts";
+import { db } from "./db.ts";
 import { eq } from "drizzle-orm";
 import dotenv from "dotenv";
 

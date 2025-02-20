@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { passport } from "../../config/passport";
+import { passport } from "../../config/passport.ts";
 
 // Extend Request to include the authenticated user type
 interface AuthenticatedRequest extends Request {

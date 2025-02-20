@@ -7,7 +7,7 @@ export const authenticate = passport.authenticate("jwt", { session: false });
 // Middleware to check role-based access
 export const authorize = (roles: number[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!roles.includes(req.user.role_id)) {
+    if (!req.user || !roles.includes(req.user.roleId)) {
       return res.status(403).json({ message: "Forbidden" });
     }
     next();

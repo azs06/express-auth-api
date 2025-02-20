@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../../config/db";
 import { users } from "../../schema";
 import dotenv from "dotenv";
+import { authenticate } from "../middleware/authMiddleware";
 
 dotenv.config();
 
@@ -38,12 +39,18 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", async (req, res) => {
+router.get("/me", authenticate, async (req, res) => {
+  try {
+    const user = await db.select().from(users).where(eq(users.id, req.user.id));
 
-})
+    if (!user.length) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-router.post("/me", async (req, res) => {
-
-})
+    res.json({ id: user[0].id, email: user[0].email, roleId: user[0].roleId });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 export default router;

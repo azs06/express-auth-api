@@ -1,6 +1,8 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import passport from "passport";
-import { User } from "../schema/User";
+import { users } from "../schema/";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -10,10 +12,19 @@ const opts = {
   secretOrKey: process.env.JWT_SECRET as string
 };
 
+
+const getExistingUser = async (id) => {
+  const user =  await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id));
+  return user.length ? user[0] : null;  
+};
+
 passport.use(
   new JwtStrategy(opts, async (jwt_payload, done) => {
     try {
-      const user = await User.findByPk(jwt_payload.id);
+      const user = await getExistingUser(jwt_payload.id);
       if (user) {
         return done(null, user);
       }

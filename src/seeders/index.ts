@@ -8,7 +8,7 @@ const getExistingUser = async (email) => {
   return await db
     .select()
     .from(users)
-    .where(eq(users.email, "soikat@myrft.xyz"));
+    .where(eq(users.email, email));
 };
 
 async function seedDatabase() {

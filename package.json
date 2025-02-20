@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "migrate": "npx drizzle-kit generate",
     "apply-migrations": "npx drizzle-kit push",
-    "seed": "ts-node src/seeders/index.ts"
+    "seed": "ts-node src/seeders/index.ts",
+    "deno:dev": "deno src/server.ts"
   },
   "keywords": [],
   "author": "",

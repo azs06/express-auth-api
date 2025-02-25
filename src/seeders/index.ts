@@ -133,19 +133,19 @@ async function seedDatabase() {
     const hashedPassword = await bcrypt.hash("admin123", 10);
     const existingAdminUser = await getExistingUser("soikat@example.com");
     if (existingAdminUser.length === 0) {
+      const adminUser = {
+        name: "Soikat",
+        username: "soikat_admin",
+        email: "soikat@example.com",
+        password: hashedPassword,
+        isActive: true,
+      }
       // Insert the admin user
       const insertResult = await db
         .insert(users)
-        .values({
-          name: "Soikat",
-          username: "soikat_admin",
-          email: "soikat@example.com",
-          password: hashedPassword,
-          isActive: true,
-        })
-        .returning({ insertedId: users.id });
+        .values(adminUser).$returningId().execute();
 
-      const adminId = insertResult[0].insertedId;
+      const adminId = insertResult[0]?.id;
 
       // Assign the Admin role to the user
       await db.insert(userRoles).values({

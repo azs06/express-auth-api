@@ -9,6 +9,7 @@
     "start": "node dist/server.js",
     "migrate": "npx drizzle-kit generate",
     "apply-migrations": "npx drizzle-kit push",
+    "migrate:check": "npx drizzle-kit check",
     "seed": "ts-node src/seeders/index.ts",
     "deno:dev": "deno run src/server.ts --unstable-sloppy-imports"
   },

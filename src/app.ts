@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import userRoutes from "./api/routes/user.ts";
 import authRoutes from "./api/routes/auth.ts";
 import { passport } from "./config/passport.ts";
+import { authenticate } from "./api/middleware/authMiddleware.ts";
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ app.get("/", (req, res) => {
   res.json("Hello, World!");
 });
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/users", authenticate, userRoutes);
 
 
 

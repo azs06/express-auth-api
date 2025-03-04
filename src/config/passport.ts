@@ -22,7 +22,7 @@ passport.use(
     try {
       const user = await getExistingUser(jwt_payload.id);
       if (user) {
-        return done(null, { id: user.id, roleId: user.roleId });
+        return done(null, { id: user.id });
       }
       return done(null, false);
     } catch (error) {

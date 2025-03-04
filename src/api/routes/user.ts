@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
 // Create new user
 router.post("/", async (req, res) => {
   try {
-    const { name, email, password, roleId } = req.body;
+    const { name, email, password, roleId, username } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newValue = {
@@ -26,9 +26,10 @@ router.post("/", async (req, res) => {
       email,
       password: hashedPassword,
       roleId,
+      username,
     };
 
-    const newUser = await db.insert(users).values(newValue);
+    const newUser = await db.insert(users).values(newValue)
 
     res.status(201).json(newUser);
   } catch (error) {

@@ -20,16 +20,19 @@ interface AuthenticatedRequest extends Request {
 router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
+
   try {
     const user = await db.select().from(users).where(eq(users.email, email));
 
     if (!user.length) {
       res.status(401).json({ message: "Invalid email or password" });
+      return;
     }
 
     const isMatch = await bcrypt.compare(password, user[0].password);
     if (!isMatch) {
       res.status(401).json({ message: "Invalid email or password" });
+      return;
     }
 
     const token = jwt.sign(
@@ -38,9 +41,11 @@ router.post("/login", async (req: Request, res: Response) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ token });
+    res.json({ token, user });
+    return;
   } catch (error) {
     res.status(500).json({ message: error.message });
+    return;
   }
 });
 

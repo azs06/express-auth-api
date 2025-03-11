@@ -41,6 +41,8 @@ router.post("/login", async (req: Request, res: Response) => {
       { expiresIn: "1h" }
     );
 
+    delete user[0].password;
+
     res.json({ token, user });
     return;
   } catch (error) {

@@ -14,7 +14,11 @@ router.get("/", authenticate, async (req, res) => {
   }
   try {
     const allUsers = await db.select().from(users);
-    res.json(allUsers);
+    const formattedUsers = allUsers.map((user) => {
+      delete user.password;
+      return user;
+    });
+    res.json(formattedUsers);
     return;
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -40,7 +44,7 @@ router.post("/", authenticate, async (req, res) => {
       username,
     };
 
-    const newUser = await db.insert(users).values(newValue)
+    const newUser = await db.insert(users).values(newValue);
 
     res.status(201).json(newUser);
     return;

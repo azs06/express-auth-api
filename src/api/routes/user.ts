@@ -23,6 +23,7 @@ router.get("/", authenticate, async (req, res) => {
       isActive: users.isActive,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
+      lastLogin: users.lastLogin,
       roles: roles.name, 
     }).from(users)
     .leftJoin(userRoles, eq(userRoles.userId, users.id))

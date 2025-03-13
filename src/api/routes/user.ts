@@ -1,8 +1,9 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import { db } from "../../config/db.ts";
-import { users } from "../../schema/index.ts";
+import { users, roles, userRoles } from "../../schema/index.ts";
 import { authenticate } from "../middleware/authMiddleware.ts";
+import { eq } from "drizzle-orm";
 
 const router = express.Router();
 
@@ -13,11 +14,35 @@ router.get("/", authenticate, async (req, res) => {
     return;
   }
   try {
-    const allUsers = await db.select().from(users);
-    const formattedUsers = allUsers.map((user) => {
-      delete user.password;
-      return user;
-    });
+    
+    const allUsers = await db.select({
+      id: users.id,
+      username: users.username,
+      name: users.name,
+      email: users.email,
+      isActive: users.isActive,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+      roles: roles.name, 
+    }).from(users)
+    .leftJoin(userRoles, eq(userRoles.userId, users.id))
+    .leftJoin(roles, eq(userRoles.roleId, roles.id))
+
+    console.log(allUsers);
+
+    const formattedUsers = Object.values(
+      allUsers.reduce((acc, user) => {
+        const { id, username, name, email, isActive, createdAt, updatedAt, roles } = user;
+        if (!acc[id]) {
+          acc[id] = { id, username, name, email, isActive, createdAt, updatedAt, roles: [] };
+        }
+        if (roles) {
+          acc[id].roles.push(roles);
+        }
+        return acc;
+      }, {})
+    );
+
     res.json(formattedUsers);
     return;
   } catch (error) {

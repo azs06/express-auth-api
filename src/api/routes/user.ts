@@ -14,7 +14,7 @@ router.get("/", authenticate, async (req, res) => {
     return;
   }
   try {
-    
+
     const allUsers = await db.select({
       id: users.id,
       username: users.username,
@@ -28,7 +28,6 @@ router.get("/", authenticate, async (req, res) => {
     .leftJoin(userRoles, eq(userRoles.userId, users.id))
     .leftJoin(roles, eq(userRoles.roleId, roles.id))
 
-    console.log(allUsers);
 
     const formattedUsers = Object.values(
       allUsers.reduce((acc, user) => {

@@ -30,11 +30,12 @@ router.get("/", authenticate, async (req, res) => {
     .leftJoin(roles, eq(userRoles.roleId, roles.id))
 
 
+
     const formattedUsers = Object.values(
       allUsers.reduce((acc, user) => {
-        const { id, username, name, email, isActive, createdAt, updatedAt, roles } = user;
+        const { id, username, name, email, isActive, createdAt, updatedAt, roles, lastLogin } = user;
         if (!acc[id]) {
-          acc[id] = { id, username, name, email, isActive, createdAt, updatedAt, roles: [] };
+          acc[id] = { id, username, name, email, isActive, createdAt, updatedAt, lastLogin, roles: [] };
         }
         if (roles) {
           acc[id].roles.push(roles);

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import userRoutes from "./api/routes/user.ts";
 import authRoutes from "./api/routes/auth.ts";
+import rolesRoutes from "./api/routes/roles.ts";
 import { passport } from "./config/passport.ts";
 import { authenticate } from "./api/middleware/authMiddleware.ts";
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/users", authenticate, userRoutes);
+app.use("/api/roles", rolesRoutes);
 
 
 

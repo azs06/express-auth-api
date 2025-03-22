@@ -111,13 +111,39 @@ router.post("/add-role-user", authenticate, async(req: Request, res: Response) =
 
 })
 
-router.post("/update/:id", authenticate, async (req: Request, res: Response) => {  
-  const user = req.body.user;
-  const roles = req.body.permissions;
+router.put("/update/:id", authenticate, async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.id, 10);
+  const { roles, assignedBy } = req.body;
 
-  // update roles
+  if (!userId || !roles || !Array.isArray(roles)) {
+    res.status(400).json({ message: "User id and an array of role IDs are required." });
+    return;
+  }
 
-})
+  try {
+    await db.delete(userRoles).where(eq(userRoles.userId, userId));
+
+    const newEntries = roles.map((roleId: number) => {
+      const entry: { userId: number; roleId: number; assignedBy?: number } = {
+        userId,
+        roleId,
+      };
+      if (assignedBy) {
+        entry.assignedBy = assignedBy;
+      }
+      return entry;
+    });
+
+  
+    const result = await db.insert(userRoles).values(newEntries);
+    res.status(200).json({ message: "User roles updated successfully", result });
+    return;
+  } catch (error) {
+    console.error("Error updating user roles:", error);
+    res.status(500).json({ message: "Internal server error" });
+    return;
+  }
+});
 
 
 export default router;

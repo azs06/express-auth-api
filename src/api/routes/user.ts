@@ -14,28 +14,47 @@ router.get("/", authenticate, async (req, res) => {
     return;
   }
   try {
-
-    const allUsers = await db.select({
-      id: users.id,
-      username: users.username,
-      name: users.name,
-      email: users.email,
-      isActive: users.isActive,
-      createdAt: users.createdAt,
-      updatedAt: users.updatedAt,
-      lastLogin: users.lastLogin,
-      roles: roles.name, 
-    }).from(users)
-    .leftJoin(userRoles, eq(userRoles.userId, users.id))
-    .leftJoin(roles, eq(userRoles.roleId, roles.id))
-
-
+    const allUsers = await db
+      .select({
+        id: users.id,
+        username: users.username,
+        name: users.name,
+        email: users.email,
+        isActive: users.isActive,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        lastLogin: users.lastLogin,
+        roles: roles.name,
+      })
+      .from(users)
+      .leftJoin(userRoles, eq(userRoles.userId, users.id))
+      .leftJoin(roles, eq(userRoles.roleId, roles.id));
 
     const formattedUsers = Object.values(
       allUsers.reduce((acc, user) => {
-        const { id, username, name, email, isActive, createdAt, updatedAt, roles, lastLogin } = user;
+        const {
+          id,
+          username,
+          name,
+          email,
+          isActive,
+          createdAt,
+          updatedAt,
+          roles,
+          lastLogin,
+        } = user;
         if (!acc[id]) {
-          acc[id] = { id, username, name, email, isActive, createdAt, updatedAt, lastLogin, roles: [] };
+          acc[id] = {
+            id,
+            username,
+            name,
+            email,
+            isActive,
+            createdAt,
+            updatedAt,
+            lastLogin,
+            roles: [],
+          };
         }
         if (roles) {
           acc[id].roles.push(roles);
@@ -70,7 +89,13 @@ router.post("/", authenticate, async (req, res) => {
       username,
     };
 
-    const newUser = await db.insert(users).values(newValue);
+    const [insertedUser] = await db.insert(users).values(newValue).$returningId()
+
+
+    const [newUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, insertedUser.id));
 
     res.status(201).json(newUser);
     return;

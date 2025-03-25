@@ -1,5 +1,11 @@
 import express, { Request, Response } from "express";
-import { roles, rolePermissions, permissions, userRoles } from "../../schema/index.ts";
+import {
+  roles,
+  rolePermissions,
+  permissions,
+  userRoles,
+  users,
+} from "../../schema/index.ts";
 import { authenticate } from "../middleware/authMiddleware.ts";
 import { db } from "../../config/db.ts";
 import { eq } from "drizzle-orm";
@@ -62,13 +68,13 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
   }
 });
 
-router.post("/create", authenticate, async (req: Request, res: Response) => {  
-  const name = req.body.name || ""
+router.post("/", authenticate, async (req: Request, res: Response) => {
+  const name = req.body.name || "";
   const description = req.body.description || "";
   const newValue = {
     name,
-    description
-  }
+    description,
+  };
   if (!name || !description) {
     res.status(400).json({ message: "Name and description are required." });
     return;
@@ -80,43 +86,63 @@ router.post("/create", authenticate, async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error creating role:", error);
     res.status(500).json({ message: "Internal server error" });
-    return
-  }
-})
-
-router.post("/add-role-user", authenticate, async(req: Request, res: Response) => {
-  const userId = req.body.userId;
-  const roleId = req.body.roleId;
-  const assignedBy = req.body.assignedBy;
-  const newValue: { userId: number; roleId: number; assignedBy?: number } = {
-    userId,
-    roleId,
-  };
-  if(assignedBy){
-    newValue["assigned_by"] = assignedBy
-  }
-  if (!userId || !roleId) {
-    res.status(400).json({ message: "userId and roleId are required." });
     return;
   }
-  try {
-    const result = await db.insert(userRoles).values(newValue);
-    res.status(201).json(result);
-    return;
-  } catch (error) {
-    console.error("Error adding role to user:", error);
-    res.status(500).json({ message: "Internal server error" });
-    return
-  }
+});
 
-})
+router.post(
+  "/add-role-user",
+  authenticate,
+  async (req: Request, res: Response) => {
+    const { userId, roleId, assignedBy } = req.body;
+
+    if (!userId || !roleId) {
+      res.status(400).json({ message: "userId and roleId are required." });
+      return;
+    }
+
+    const user = await db.select().from(users).where(eq(users.id, userId));
+    const role = await db.select().from(roles).where(eq(roles.id, roleId));
+
+    if (!user) {
+      res.status(404).json({ message: `User not found with the id: ${userId}` });
+      return;
+    }
+
+    if(!role) {
+      res.status(404).json({ message: `Role not found with the id: ${roleId}` });
+      return;
+    }
+
+    const newValue: { userId: number; roleId: number; assignedBy?: number } = {
+      userId,
+      roleId,
+    };
+
+    if (assignedBy) {
+      newValue.assignedBy = assignedBy;
+    }
+
+    try {
+      await db.insert(userRoles).values(newValue);
+      res.status(201).json({ message: "Role added to user successfully" });
+      return;
+    } catch (error) {
+      console.error("Error adding role to user:", error);
+      res.status(500).json({ message: "Internal server error" });
+      return;
+    }
+  }
+);
 
 router.put("/update/:id", authenticate, async (req: Request, res: Response) => {
   const userId = parseInt(req.params.id, 10);
   const { roles, assignedBy } = req.body;
 
   if (!userId || !roles || !Array.isArray(roles)) {
-    res.status(400).json({ message: "User id and an array of role IDs are required." });
+    res
+      .status(400)
+      .json({ message: "User id and an array of role IDs are required." });
     return;
   }
 
@@ -134,9 +160,10 @@ router.put("/update/:id", authenticate, async (req: Request, res: Response) => {
       return entry;
     });
 
-  
     const result = await db.insert(userRoles).values(newEntries);
-    res.status(200).json({ message: "User roles updated successfully", result });
+    res
+      .status(200)
+      .json({ message: "User roles updated successfully", result });
     return;
   } catch (error) {
     console.error("Error updating user roles:", error);
@@ -144,6 +171,5 @@ router.put("/update/:id", authenticate, async (req: Request, res: Response) => {
     return;
   }
 });
-
 
 export default router;

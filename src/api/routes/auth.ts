@@ -38,7 +38,7 @@ router.post("/login", async (req: Request, res: Response) => {
     const token = jwt.sign(
       { id: user[0].id },
       process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     delete user[0].password;

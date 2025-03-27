@@ -71,6 +71,7 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
 router.post("/", authenticate, async (req: Request, res: Response) => {
   const name = req.body.name || "";
   const description = req.body.description || "";
+  const permissions = req.body.permissions || [];
   const newValue = {
     name,
     description,
@@ -80,8 +81,12 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await db.insert(roles).values(newValue);
-    res.status(201).json(result);
+    const roleId = await db.insert(roles).values(newValue).$returningId()
+    const newEntries = permissions.map((permissionId: number) => {
+      return { roleId, permissionId };
+    });
+    await db.insert(rolePermissions).values(newEntries);
+    res.status(201).json({ message: "Role created successfully" });
     return;
   } catch (error) {
     console.error("Error creating role:", error);

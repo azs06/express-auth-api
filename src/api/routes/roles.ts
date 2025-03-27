@@ -81,9 +81,9 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
     return;
   }
   try {
-    const roleId = await db.insert(roles).values(newValue).$returningId()
+    const roleId = await db.insert(roles).values(newValue).$returningId();
     const newEntries = permissions.map((permissionId: number) => {
-      return { roleId, permissionId };
+      return { roleId: roleId[0]?.id, permissionId };
     });
     await db.insert(rolePermissions).values(newEntries);
     res.status(201).json({ message: "Role created successfully" });
@@ -110,12 +110,16 @@ router.post(
     const role = await db.select().from(roles).where(eq(roles.id, roleId));
 
     if (!user) {
-      res.status(404).json({ message: `User not found with the id: ${userId}` });
+      res
+        .status(404)
+        .json({ message: `User not found with the id: ${userId}` });
       return;
     }
 
-    if(!role) {
-      res.status(404).json({ message: `Role not found with the id: ${roleId}` });
+    if (!role) {
+      res
+        .status(404)
+        .json({ message: `Role not found with the id: ${roleId}` });
       return;
     }
 

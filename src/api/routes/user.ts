@@ -89,13 +89,15 @@ router.post("/", authenticate, async (req, res) => {
       username,
     };
 
-    const [insertedUser] = await db.insert(users).values(newValue).$returningId()
-
+    const [insertedUser] = await db
+      .insert(users)
+      .values(newValue)
+      .$returningId();
 
     const [newUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, insertedUser.id));
+      .select()
+      .from(users)
+      .where(eq(users.id, insertedUser.id));
 
     res.status(201).json(newUser);
     return;
@@ -165,6 +167,29 @@ router.get("/:id", authenticate, async (req, res) => {
       }, {})
     );
     res.json(formattedUser[0]);
+    return;
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    return;
+  }
+});
+
+router.delete("/:id", authenticate, async (req, res) => {
+  if (!req.user) {
+    res.status(401).json({ message: "Unauthenticated" });
+    return;
+  }
+  try {
+    const { id } = req.params;
+    const deletedUser = await db
+      .delete(users)
+      .where(eq(users.id, parseInt(id, 10)));
+
+    if (deletedUser[0].affectedRows === 0) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.status(200).json({ message: "User deleted successfully" });
     return;
   } catch (error) {
     res.status(500).json({ message: error.message });

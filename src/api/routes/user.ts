@@ -1,9 +1,10 @@
 import express from "express";
 import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
 import { db } from "../../config/db.ts";
 import { users, roles, userRoles } from "../../schema/index.ts";
 import { authenticate } from "../middleware/authMiddleware.ts";
-import { eq } from "drizzle-orm";
+
 
 const router = express.Router();
 

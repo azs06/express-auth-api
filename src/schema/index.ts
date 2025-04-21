@@ -124,6 +124,22 @@ export const permissionsRelations = relations(permissions, ({ many }) => ({
   rolePermissions: many(rolePermissions),
 }));
 
+export const passwordResetTokens = mysqlTable(
+  "password_reset_tokens",
+  {
+    id: int("id").primaryKey().autoincrement(),
+    userId: int("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    token: varchar("token", { length: 255 }).notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => ({
+    userTokenIdx: uniqueIndex("user_token_idx").on(table.userId, table.token),
+  })
+);
+
 // Types for better type safety
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

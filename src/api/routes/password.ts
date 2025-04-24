@@ -41,7 +41,7 @@ router.post(
         expiresAt,
       });
 
-      const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+      const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}&email=${email}`;
       await mailer.sendMail({
         from: process.env.MAIL_FROM,
         to: user.email,

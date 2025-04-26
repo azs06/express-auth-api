@@ -5,7 +5,6 @@ import { db } from "../../config/db.ts";
 import { users, roles, userRoles } from "../../schema/index.ts";
 import { authenticate } from "../middleware/authMiddleware.ts";
 
-
 const router = express.Router();
 
 // Get all users
@@ -191,6 +190,45 @@ router.delete("/:id", authenticate, async (req, res) => {
       return;
     }
     res.status(200).json({ message: "User deleted successfully" });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    return;
+  }
+});
+
+router.put("/:id", authenticate, async (req, res) => {
+  if (!req.user) {
+    res.status(401).json({ message: "Unauthenticated" });
+    return;
+  }
+  try {
+    const { id } = req.params;
+    const { name, email, password, roleId, username } = req.body;
+
+    const updatedValue = {
+      name,
+      email,
+      password,
+      roleId,
+      username,
+    };
+    if (password) {
+      updatedValue.password = await bcrypt.hash(password, 10);
+    }else{
+      delete updatedValue.password;
+    }
+
+    const [updatedUser] = await db
+      .update(users)
+      .set(updatedValue)
+      .where(eq(users.id, parseInt(id, 10)));
+
+    if (updatedUser[0].affectedRows === 0) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.status(200).json(updatedUser);
     return;
   } catch (error) {
     res.status(500).json({ message: error.message });

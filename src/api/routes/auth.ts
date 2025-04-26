@@ -69,10 +69,12 @@ router.get(
         res.status(404).json({ message: "User not found" });
       }
 
-      res.json({
-        id: user[0].id,
-        email: user[0].email,
-      });
+      const data = {
+        ...user[0],
+      }
+      delete data.password;
+
+      res.json(data);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

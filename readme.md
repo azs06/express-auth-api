@@ -3,5 +3,5 @@
 ## Stacks
 
 * Express.js
-* Sequelize
+* Drizzle
 * Typescript
